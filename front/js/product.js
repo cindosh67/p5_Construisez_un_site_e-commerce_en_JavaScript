@@ -16,7 +16,7 @@ promiseFetch.then((data) => {
   data.json().then((detailProduct) =>{
     console.log(detailProduct);
     
-    //récupération des details avec les Class et ID pour les afficher
+    //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
 
     document.title = detailProduct.name;
     document.querySelector("#title").textContent += detailProduct.name;
@@ -24,14 +24,28 @@ promiseFetch.then((data) => {
     document.querySelector("#price").textContent += detailProduct.price;
     document.querySelector("#description").textContent += detailProduct.description;
 
-    //let colorsChoice = document.querySelector('#colors');
+    //selectionner et stocker Id colors
+
+    let colorsChoice = document.querySelector('#colors');
     //console.log(colorsChoice);
+    
+    //boucle pour avoir les couleurs + création de la balise option pour chacune des couleurs
 
-    document.querySelector('#colors');
-    console.log("#colors");
+    for ( let i = 0; i < detailProduct.colors.length; i++) {
+      let color = detailProduct.colors[i];
+      console.log(color);
+      let option = document.createElement("option");
+      console.log(option);
 
-  })
-})
+      option.innerText = `${color}`;
+      option.value = `${color}`;
+      
+    colorsChoice.appendChild(option);
+    }
+  });
+});
+  
+
 /* test AVEC MATHIEU 
 
 const monUrl = new URL(document.location);
