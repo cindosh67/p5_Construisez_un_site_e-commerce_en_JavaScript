@@ -1,19 +1,31 @@
 //Second test Seul
 
-//On localise url pour avoir url avec l'Id produit et on stock
+/* (Une autre facon de récupérer l'URL)
+
+On localise url pour avoir url avec l'Id produit et on stock
 const productId = window.location.search.split("?id=").join("");
 console.log(productId);
 
 const urlProduct = `http://localhost:3000/api/products/${productId}`;
-//créer varible promesse = Fetch + url API 
 
-const promiseFetch = fetch(urlProduct);
-console.log(promiseFetch);
+*/
 
-//demande de reponse en .json  
+const urlProduct = new URL (document.location); //nouvelle variable pour stocker url
+console.log(urlProduct);
 
-promiseFetch.then((data) => {
-  data.json().then((detailProduct) =>{
+const productId = urlProduct.searchParams; // nouvelle variable pour stocker le searchParams de l'url
+
+const urlProductId = productId.get("id"); // nouvelle variable pour stocker le paramètre get (id)
+console.log(urlProductId);
+
+const urlDetail = `http://localhost:3000/api/products/${urlProductId}`;
+
+const promiseFetch = fetch (urlDetail) ; //créer varible promesse = Fetch + url API 
+//console.log(promiseFetch);
+
+
+promiseFetch.then((data) => { //promise Fetch
+  data.json().then((detailProduct) =>{ //demande de reponse en .json  
     console.log(detailProduct);
     
     //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
@@ -46,7 +58,7 @@ promiseFetch.then((data) => {
 });
   
 
-/* test AVEC MATHIEU 
+ /*test AVEC MATHIEU 
 
 const monUrl = new URL(document.location);
 console.log(monUrl);
@@ -65,7 +77,4 @@ promesseFinFetch.then((data) => {
     document.querySelector
     console.log(produit);
   });
-});
-
-
-*/
+});*/

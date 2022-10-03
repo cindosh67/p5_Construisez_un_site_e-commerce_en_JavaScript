@@ -68,6 +68,7 @@ promesseFinFetch.then(async (retourDonee) => {
 const url = 'http://localhost:3000/api/products'
 
 //créer varible promesse = Fetch + url API 
+
 const promesseFetch = fetch(url);
 
 //demande de reponse en .json 
