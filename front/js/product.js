@@ -2,25 +2,34 @@
 
 /* (Une autre facon de récupérer l'URL)
 
-On localise url pour avoir url avec l'Id produit et on stock
+//On localise url pour avoir url avec l'Id produit et on stock
+
 const productId = window.location.search.split("?id=").join("");
 console.log(productId);
 
-const urlProduct = `http://localhost:3000/api/products/${productId}`;
+const urlDetail = `http://localhost:3000/api/products/${productId}`;
 
 */
+let colorsChoice = document.querySelector('#colors'); //selectionner et stocker Id colors
+  //console.log(colorsChoice);
 
-const urlProduct = new URL (document.location); //nouvelle variable pour stocker url
-console.log(urlProduct);
+let btn = document.getElementById("addToCart")
+  //console.log(btn);
 
-const productId = urlProduct.searchParams; // nouvelle variable pour stocker le searchParams de l'url
+let quantity = document.querySelector("#quantity"); //selectionnet et stocker pour réutiliser la variable plus tard
+  console.log(quantity);
 
-const urlProductId = productId.get("id"); // nouvelle variable pour stocker le paramètre get (id)
-console.log(urlProductId);
+const urlProduct = new URL (document.location); //variable pour stocker la nouvelle url
+//console.log(urlProduct);
+
+const productId = urlProduct.searchParams; //variable pour stocker le searchParams de l'url
+
+const urlProductId = productId.get("id"); //variable pour stocker le paramètre get (id)
+//console.log(urlProductId);
 
 const urlDetail = `http://localhost:3000/api/products/${urlProductId}`;
 
-const promiseFetch = fetch (urlDetail) ; //créer varible promesse = Fetch + url API 
+const promiseFetch = fetch (urlDetail) ; //créer varible promesse de Fetch + url API 
 //console.log(promiseFetch);
 
 
@@ -36,10 +45,7 @@ promiseFetch.then((data) => { //promise Fetch
     document.querySelector("#price").textContent += detailProduct.price;
     document.querySelector("#description").textContent += detailProduct.description;
 
-    //selectionner et stocker Id colors
-
-    let colorsChoice = document.querySelector('#colors');
-    //console.log(colorsChoice);
+    
     
     //boucle pour avoir les couleurs + création de la balise option pour chacune des couleurs
 
@@ -54,9 +60,50 @@ promiseFetch.then((data) => { //promise Fetch
       
     colorsChoice.appendChild(option);
     }
+    
+    //addBasket(detailProduct); // on appel la fonction ici pour pouvoir recupérer les details produits
+    
   });
-});
+  //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
+  btn.addEventListener("click", () => {
   
+
+    if(colorsChoice.value == false){
+      confirm("Veuillez sélectionner une couleur");
+      console.log(colorsChoice);
+    } else if (quantity.value == 0) {
+      alert("Veuillez choisir une quantitée");
+      console.log(quantity);
+    }
+    else {
+      alert(" Votre article est bien ajouté au panier");
+    }
+
+  })
+
+});
+
+//********************** LE PANIER LOCALSTORAGE **********************/
+
+  /*const addBasket = ()  => {
+  
+    
+    
+    bouton.addEventListener("click", () => {
+
+      let productTab = JSON.parse(localStorage.getItem("data"));
+      let selectCanap = document.querySelector("#colors");
+      console.log(productTab, selectCanap);
+
+      if (productTab == null) {
+        productTab = [];
+        productTab.push(detailProduct);
+        console.log(productTab);
+      }
+
+    })
+  }*/
+
 
  /*test AVEC MATHIEU 
 
