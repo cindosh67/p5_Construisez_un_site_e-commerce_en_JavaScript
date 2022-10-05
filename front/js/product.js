@@ -63,42 +63,36 @@ promiseFetch.then((data) => { //promise Fetch
     }
 
   //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
-    btn.addEventListener("click", () => {
-    
-
-      if(colorsChoice.value == false){
-        confirm("Veuillez sélectionner une couleur");
-        console.log(colorsChoice);
-      } else if (quantity.value == 0) {
-        alert("Veuillez choisir une quantitée");
-        console.log(quantity);
-      }
-      else {
-        alert(" Votre article est bien ajouté au panier");
-      }
-
-    })
+  
     
     /******************************* Le Local Storage ********************/
 
     let bouton = document.getElementById("addToCart");
-    console.log(bouton);
+
     bouton.addEventListener("click", () => {
       let produitTab = JSON.parse(localStorage.getItem("basket"));
       console.log(produitTab);
     
+      if(colorsChoice.value == false){
+        confirm("Veuillez sélectionner une couleur");
+      } else if (quantity.value == 0) {
+        confirm("Veuillez choisir une quantitée");
+      }
+      else {
+        alert(" Votre article est bien ajouté au panier");
+      }
 
       const fusionProd = Object.assign({}, detailProduct, {
         colors : `${colorsChoice.value}`,
         quantity: `${quantity.value}`,
       })
 
-      //console.log(fusionProd);
+      console.log(fusionProd);
 
       if (produitTab == null){
         produitTab = [];
         produitTab.push(fusionProd);
-        //console.log(produitTab);
+        console.log(produitTab);
         localStorage.setItem("basket", JSON.stringify(produitTab));
       }
     })
