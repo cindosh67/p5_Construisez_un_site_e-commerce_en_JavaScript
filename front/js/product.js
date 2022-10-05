@@ -52,9 +52,7 @@ promiseFetch.then((data) => { //promise Fetch
 
     for ( let i = 0; i < detailProduct.colors.length; i++) {
       let color = detailProduct.colors[i];
-      console.log(color);
       let option = document.createElement("option");
-      console.log(option);
 
       option.innerText = `${color}`;
       option.value = `${color}`;
@@ -70,31 +68,90 @@ promiseFetch.then((data) => { //promise Fetch
     let bouton = document.getElementById("addToCart");
 
     bouton.addEventListener("click", () => {
-      let produitTab = JSON.parse(localStorage.getItem("basket"));
-      console.log(produitTab);
-    
-      if(colorsChoice.value == false){
-        confirm("Veuillez sélectionner une couleur");
-      } else if (quantity.value == 0) {
-        confirm("Veuillez choisir une quantitée");
-      }
-      else {
-        alert(" Votre article est bien ajouté au panier");
+
+
+      // let produitTab = JSON.parse(localStorage.getItem("basket"));
+      // console.log(produitTab);
+      //
+      // if(colorsChoice.value == false){
+      //   confirm("Veuillez sélectionner une couleur");
+      // }
+      // else if (quantity.value == 0) {
+      //   confirm("Veuillez choisir une quantitée");
+      // }
+      // else {
+      //   alert(" Votre article est bien ajouté au panier");
+      // }
+      //
+      // const fusionProd = Object.assign({}, detailProduct, {
+      //   colors : `${colorsChoice.value}`,
+      //   quantity: `${quantity.value}`,
+      // })
+      //
+      // console.log(fusionProd);
+      //
+      // if (produitTab == null){
+      //   produitTab = [];
+      //   produitTab.push(fusionProd);
+      //   console.log(produitTab);
+      //   localStorage.setItem("basket", JSON.stringify(produitTab));
+      // }
+
+      // Pas de couleur => erreur => quit
+      if (colorsChoice.value === '') {
+        alert("Veuillez sélectionner une couleur");
+        return;
       }
 
-      const fusionProd = Object.assign({}, detailProduct, {
-        colors : `${colorsChoice.value}`,
-        quantity: `${quantity.value}`,
-      })
-
-      console.log(fusionProd);
-
-      if (produitTab == null){
-        produitTab = [];
-        produitTab.push(fusionProd);
-        console.log(produitTab);
-        localStorage.setItem("basket", JSON.stringify(produitTab));
+      // ~Pas de quantité =>  erreur => quit
+      const quantityInt = parseInt(quantity.value);
+      if (quantityInt === 0) {
+        alert("Veuillez choisir une quantitée");
+        return;
       }
+
+      // Vérification / récupération d'un panier eventuellement existant ou creation d'un nouveau panier
+      const basketStr = localStorage.getItem('basket');
+      let basket = null;
+      if (basketStr === null) {
+        basket = [];
+      } else {
+        basket = JSON.parse(basketStr);
+      }
+
+      // Rechercher dans le panier existant si il y a deja un article du meme produit avec la meme couleur
+      // Si on le trouve on stock sa position dans le tableau dans la variable basketItemIndex
+      // Si rien n'est trouvé alors basketItemIndex aura la valeur null
+      let basketItemIndex = null;
+      for (let i = 0; i < basket.length; i++) {
+        let searchItem = basket[i];
+        if (
+          searchItem.color === colorsChoice.value
+          && searchItem.id === urlProductId
+        ) {
+          basketItemIndex = i;
+        }
+      }
+      // basketItemIndex = basket
+      //   .findIndex((searchItem) => searchItem.color === colorsChoice.value && searchItem.id === urlProductId);
+
+      debugger;
+      // Ajout d'un nouvel articl dans le panier si il n'y en a pas deja un
+      if (basketItemIndex === -1) {
+        let newBasketItem = {
+          color: colorsChoice.value,
+          quantity: quantityInt,
+          id: urlProductId,
+        }
+        basket.push(newBasketItem);
+
+        // Modification de la quantité du produit si deja présent
+      } else {
+        basket[basketItemIndex].quantity += quantityInt;
+      }
+
+      // Enregistrement du panier modifié
+      localStorage.setItem('basket', JSON.stringify(basket));
     })
   
   });
