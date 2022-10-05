@@ -17,7 +17,7 @@ let btn = document.getElementById("addToCart")
   //console.log(btn);
 
 let quantity = document.querySelector("#quantity"); //selectionnet et stocker pour réutiliser la variable plus tard
-  console.log(quantity);
+ // console.log(quantity);
 
 const urlProduct = new URL (document.location); //variable pour stocker la nouvelle url
 //console.log(urlProduct);
@@ -35,7 +35,8 @@ const promiseFetch = fetch (urlDetail) ; //créer varible promesse de Fetch + ur
 
 promiseFetch.then((data) => { //promise Fetch
   data.json().then((detailProduct) =>{ //demande de reponse en .json  
-    console.log(detailProduct);
+    //console.log(detailProduct);
+  
     
     //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
 
@@ -60,50 +61,50 @@ promiseFetch.then((data) => { //promise Fetch
       
     colorsChoice.appendChild(option);
     }
-    
-    //addBasket(detailProduct); // on appel la fonction ici pour pouvoir recupérer les details produits
-    
-  });
+
   //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
-  btn.addEventListener("click", () => {
-  
-
-    if(colorsChoice.value == false){
-      confirm("Veuillez sélectionner une couleur");
-      console.log(colorsChoice);
-    } else if (quantity.value == 0) {
-      alert("Veuillez choisir une quantitée");
-      console.log(quantity);
-    }
-    else {
-      alert(" Votre article est bien ajouté au panier");
-    }
-
-  })
-
-});
-
-//********************** LE PANIER LOCALSTORAGE **********************/
-
-  /*const addBasket = ()  => {
-  
+    btn.addEventListener("click", () => {
     
-    
-    bouton.addEventListener("click", () => {
 
-      let productTab = JSON.parse(localStorage.getItem("data"));
-      let selectCanap = document.querySelector("#colors");
-      console.log(productTab, selectCanap);
-
-      if (productTab == null) {
-        productTab = [];
-        productTab.push(detailProduct);
-        console.log(productTab);
+      if(colorsChoice.value == false){
+        confirm("Veuillez sélectionner une couleur");
+        console.log(colorsChoice);
+      } else if (quantity.value == 0) {
+        alert("Veuillez choisir une quantitée");
+        console.log(quantity);
+      }
+      else {
+        alert(" Votre article est bien ajouté au panier");
       }
 
     })
-  }*/
+    
+    /******************************* Le Local Storage ********************/
 
+    let bouton = document.getElementById("addToCart");
+    console.log(bouton);
+    bouton.addEventListener("click", () => {
+      let produitTab = JSON.parse(localStorage.getItem("basket"));
+      console.log(produitTab);
+    
+
+      const fusionProd = Object.assign({}, detailProduct, {
+        colors : `${colorsChoice.value}`,
+        quantity: `${quantity.value}`,
+      })
+
+      //console.log(fusionProd);
+
+      if (produitTab == null){
+        produitTab = [];
+        produitTab.push(fusionProd);
+        //console.log(produitTab);
+        localStorage.setItem("basket", JSON.stringify(produitTab));
+      }
+    })
+  
+  });
+});
 
  /*test AVEC MATHIEU 
 
