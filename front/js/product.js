@@ -11,33 +11,28 @@ const urlDetail = `http://localhost:3000/api/products/${productId}`;
 
 */
 let colorsChoice = document.querySelector('#colors'); //selectionner et stocker Id colors
-  //console.log(colorsChoice);
 
-let btn = document.getElementById("addToCart")
-  //console.log(btn);
+let btn = document.getElementById("addToCart")//sélectionner et stocker pour réutiliser la variable plus tard
 
-let quantity = document.querySelector("#quantity"); //selectionnet et stocker pour réutiliser la variable plus tard
- // console.log(quantity);
+let quantity = document.querySelector("#quantity"); //sélectionner et stocker pour réutiliser la variable plus tard
 
-const urlProduct = new URL (document.location); //variable pour stocker la nouvelle url
-//console.log(urlProduct);
+/*******************************  Recherche de l'url searchParams  ********************/
+
+const urlProduct = new URL(document.location); //variable pour stocker la nouvelle url
 
 const productId = urlProduct.searchParams; //variable pour stocker le searchParams de l'url
 
 const urlProductId = productId.get("id"); //variable pour stocker le paramètre get (id)
-//console.log(urlProductId);
 
 const urlDetail = `http://localhost:3000/api/products/${urlProductId}`;
 
-const promiseFetch = fetch (urlDetail) ; //créer varible promesse de Fetch + url API 
+const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url API 
 //console.log(promiseFetch);
 
 
 promiseFetch.then((data) => { //promise Fetch
-  data.json().then((detailProduct) =>{ //demande de reponse en .json  
-    //console.log(detailProduct);
-  
-    
+  data.json().then((detailProduct) => { //demande de reponse en .json  
+
     //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
 
     document.title = detailProduct.name;
@@ -46,134 +41,86 @@ promiseFetch.then((data) => { //promise Fetch
     document.querySelector("#price").textContent += detailProduct.price;
     document.querySelector("#description").textContent += detailProduct.description;
 
-    
-    
     //boucle pour avoir les couleurs + création de la balise option pour chacune des couleurs
 
-    for ( let i = 0; i < detailProduct.colors.length; i++) {
+    for (let i = 0; i < detailProduct.colors.length; i++) {
       let color = detailProduct.colors[i];
       let option = document.createElement("option");
 
       option.innerText = `${color}`;
       option.value = `${color}`;
-      
-    colorsChoice.appendChild(option);
+
+      colorsChoice.appendChild(option);
     }
 
-  //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
-  
-    
-    /******************************* Le Local Storage ********************/
+    /******************************* Le Local Storage  ********************/
+
+    //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
 
     let bouton = document.getElementById("addToCart");
 
     bouton.addEventListener("click", () => {
 
+      // condition si aucune couleur ou quantitées choisi 
 
-      // let produitTab = JSON.parse(localStorage.getItem("basket"));
-      // console.log(produitTab);
-      //
-      // if(colorsChoice.value == false){
-      //   confirm("Veuillez sélectionner une couleur");
-      // }
-      // else if (quantity.value == 0) {
-      //   confirm("Veuillez choisir une quantitée");
-      // }
-      // else {
-      //   alert(" Votre article est bien ajouté au panier");
-      // }
-      //
-      // const fusionProd = Object.assign({}, detailProduct, {
-      //   colors : `${colorsChoice.value}`,
-      //   quantity: `${quantity.value}`,
-      // })
-      //
-      // console.log(fusionProd);
-      //
-      // if (produitTab == null){
-      //   produitTab = [];
-      //   produitTab.push(fusionProd);
-      //   console.log(produitTab);
-      //   localStorage.setItem("basket", JSON.stringify(produitTab));
-      // }
-
-      // Pas de couleur => erreur => quit
-      if (colorsChoice.value === '') {
+      if (colorsChoice.value === "") {
         alert("Veuillez sélectionner une couleur");
         return;
       }
 
-      // ~Pas de quantité =>  erreur => quit
-      const quantityInt = parseInt(quantity.value);
-      if (quantityInt === 0) {
-        alert("Veuillez choisir une quantitée");
-        return;
+      const quantityEntier = parseInt(quantity.value); //parsInt analyse la valeur de la chaîne et renvoi 1er eniter
+      if (quantityEntier === 0) {
+        alert("Veuillez sélectionner une quantitée");
+      } else {
+        alert("Votre article est bien ajouté au panier");
       }
 
-      // Vérification / récupération d'un panier eventuellement existant ou creation d'un nouveau panier
-      const basketStr = localStorage.getItem('basket');
-      let basket = null;
-      if (basketStr === null) {
+      /*On vérifie le basketStorage (localStorage) de clé basket 
+      si null on créer un tableau vide pour récuperer les données sinon on reforme l'objet à partir de la chaîne de caractère*/
+
+      const basketStorage = localStorage.getItem("basket");
+
+      let basket = null
+      if (basketStorage === null) {
         basket = [];
       } else {
-        basket = JSON.parse(basketStr);
+        basket = JSON.parse(basketStorage);
       }
 
-      // Rechercher dans le panier existant si il y a deja un article du meme produit avec la meme couleur
-      // Si on le trouve on stock sa position dans le tableau dans la variable basketItemIndex
-      // Si rien n'est trouvé alors basketItemIndex aura la valeur null
-      let basketItemIndex = null;
+      // Rechercher si il y a deja un article identique avec la meme couleur
+      // Si on le trouve on stock sa position dans le tableau de la variable item
+      // Si rien n'est trouvé alors item aura la valeur null
+
+      let item = null
       for (let i = 0; i < basket.length; i++) {
         let searchItem = basket[i];
         if (
           searchItem.color === colorsChoice.value
           && searchItem.id === urlProductId
         ) {
-          basketItemIndex = i;
+          item = i
         }
       }
-      // basketItemIndex = basket
-      //   .findIndex((searchItem) => searchItem.color === colorsChoice.value && searchItem.id === urlProductId);
 
-      debugger;
-      // Ajout d'un nouvel articl dans le panier si il n'y en a pas deja un
-      if (basketItemIndex === -1) {
-        let newBasketItem = {
-          color: colorsChoice.value,
-          quantity: quantityInt,
-          id: urlProductId,
+      // ajout d'un nouvel article dans le panier si il n'y est pas
+
+      if (item === null) {
+        let newItem = {
+          colors: colorsChoice.value,
+          quantity: quantityEntier,
+          id: urlProductId
         }
-        basket.push(newBasketItem);
-
-        // Modification de la quantité du produit si deja présent
+        basket.push(newItem); //on push le newItem dans basket
+        console.log(newItem);
       } else {
-        basket[basketItemIndex].quantity += quantityInt;
+        basket[item].quantity += quantityEntier; //sinon on ajuste la quantité
       }
+      console.log(basket);
 
-      // Enregistrement du panier modifié
+      //Enregistrement en transformant l'objet en chaîne de caractère
+
       localStorage.setItem('basket', JSON.stringify(basket));
+
     })
-  
   });
 });
-
- /*test AVEC MATHIEU 
-
-const monUrl = new URL(document.location);
-console.log(monUrl);
-const searchParams = monUrl.searchParams;
-
-const productId = searchParams.get('id');
-console.log(productId);
-
-
-const endpoint = `http://localhost:3000/api/products/${productId}`;
-
-const promesseFinFetch = fetch(endpoint);
-
-promesseFinFetch.then((data) => {
-  data.json().then((produit) => {
-    document.querySelector
-    console.log(produit);
-  });
-});*/
