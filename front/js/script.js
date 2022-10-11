@@ -100,11 +100,8 @@ promesseFetch.then((data) => {
     console.log(htmlText)
     
     
-    // créer variable de l'ID items pour afficher les produit dans le DOM avec innerHTML
-    
-    /*const affichage = document.getElementById("items");
-    console.log(affichage);
-    affichage.innerHTML = htmlText;*/
+    // créer variable affichage de l'ID items pour afficher les produit dans le DOM avec innerHTML
+  
 
     const affichage = document.querySelector("#items");
     affichage.innerHTML = htmlText

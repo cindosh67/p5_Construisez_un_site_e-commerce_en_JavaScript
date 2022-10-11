@@ -16,15 +16,14 @@ let btn = document.getElementById("addToCart")//sélectionner et stocker pour r�
 
 let quantity = document.querySelector("#quantity"); //sélectionner et stocker pour réutiliser la variable plus tard
 
-/*******************************  Recherche de l'url searchParams  ********************/
+/*******************************  Recherche de l'url searchParams  *********************/
 
-const urlProduct = new URL(document.location); //variable pour stocker la nouvelle url
+const urlProduct = new URLSearchParams(document.location.search);
 
-const productId = urlProduct.searchParams; //variable pour stocker le searchParams de l'url
-
-const urlProductId = productId.get("id"); //variable pour stocker le paramètre get (id)
+const urlProductId = urlProduct.get("id");
 
 const urlDetail = `http://localhost:3000/api/products/${urlProductId}`;
+
 
 const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url API 
 //console.log(promiseFetch);
@@ -53,7 +52,9 @@ promiseFetch.then((data) => { //promise Fetch
       colorsChoice.appendChild(option);
     }
 
-    /******************************* Le Local Storage  ********************/
+  
+
+/******************************* Le Local Storage  ********************/
 
     //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
 
@@ -68,9 +69,10 @@ promiseFetch.then((data) => { //promise Fetch
         return;
       }
 
-      const quantityEntier = parseInt(quantity.value); //parsInt analyse la valeur de la chaîne et renvoi 1er eniter
-      if (quantityEntier === 0) {
+      const quantityChoice = parseInt(quantity.value); //parsInt analyse la valeur de la chaîne et renvoi 1er eniter
+      if (quantityChoice === 0) {
         alert("Veuillez sélectionner une quantitée");
+        return
       } else {
         alert("Votre article est bien ajouté au panier");
       }
@@ -79,6 +81,7 @@ promiseFetch.then((data) => { //promise Fetch
       si null on créer un tableau vide pour récuperer les données sinon on reforme l'objet à partir de la chaîne de caractère*/
 
       const basketStorage = localStorage.getItem("basket");
+      
 
       let basket = null
       if (basketStorage === null) {
@@ -91,7 +94,7 @@ promiseFetch.then((data) => { //promise Fetch
       // Si on le trouve on stock sa position dans le tableau de la variable item
       // Si rien n'est trouvé alors item aura la valeur null
 
-      let item = null
+      let item = null;
       for (let i = 0; i < basket.length; i++) {
         let searchItem = basket[i];
         if (
@@ -100,23 +103,28 @@ promiseFetch.then((data) => { //promise Fetch
         ) {
           item = i
         }
-      }
-
+      };
       // ajout d'un nouvel article dans le panier si il n'y est pas
 
-      if (item === null) {
-        let newItem = {
-          colors: colorsChoice.value,
-          quantity: quantityEntier,
-          id: urlProductId
-        }
-        basket.push(newItem); //on push le newItem dans basket
-        console.log(newItem);
-      } else {
-        basket[item].quantity += quantityEntier; //sinon on ajuste la quantité
-      }
-      console.log(basket);
+      let newItem = {
+        id      : urlProductId,
+        name    : detailProduct.name,
+        image   : detailProduct.imageUrl,
+        alt     : detailProduct.altTxt,
+        colors  : colorsChoice.value,
+        quantity: quantityChoice,
+        price   : detailProduct.price,
+        totalPrice    : detailProduct.price * quantityChoice,
 
+      };
+      
+      if (item === null) {
+        basket.push(newItem); //on push le newItem dans basket
+      } else {
+        basket[item].quantity += quantityChoice //sinon on ajuste la quantité
+      };
+      console.log(basket[item].quantity);
+      console.log(quantityChoice);
       //Enregistrement en transformant l'objet en chaîne de caractère
 
       localStorage.setItem('basket', JSON.stringify(basket));
