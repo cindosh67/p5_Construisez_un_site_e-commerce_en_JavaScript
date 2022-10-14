@@ -1,30 +1,16 @@
-//Second test Seul
-
-/* (Une autre facon de récupérer l'URL)
-
-//On localise url pour avoir url avec l'Id produit et on stock
-
-const productId = window.location.search.split("?id=").join("");
-console.log(productId);
-
-const urlDetail = `http://localhost:3000/api/products/${productId}`;
-
-*/
 let colorsChoice = document.querySelector('#colors'); //selectionner et stocker Id colors
 
 let btn = document.getElementById("addToCart")//sélectionner et stocker pour réutiliser la variable plus tard
 
-let quantity = document.querySelector("#quantity"); //sélectionner et stocker pour réutiliser la variable plus tard
+let quantity = document.querySelector("#quantity"); //sélectionner et stocker pour réutiliser la variable plus tard 
 
-/*******************************  Recherche de l'url searchParams  *********************/
+/*******************************  Recherche de l'url searchParams  ********************/
 
-const urlProduct = new URLSearchParams(document.location.search);
+let urlProduct = new URLSearchParams (document.location.search);
 
-const urlProductId = urlProduct.get("id");
+let productId = urlProduct.get("id");
 
-const urlDetail = `http://localhost:3000/api/products/${urlProductId}`;
-
-
+const urlDetail = `http://localhost:3000/api/products/${productId}`
 const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url API 
 //console.log(promiseFetch);
 
@@ -52,9 +38,7 @@ promiseFetch.then((data) => { //promise Fetch
       colorsChoice.appendChild(option);
     }
 
-  
-
-/******************************* Le Local Storage  ********************/
+    /******************************* Le Local Storage  ********************/
 
     //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
 
@@ -72,11 +56,10 @@ promiseFetch.then((data) => { //promise Fetch
       const quantityChoice = parseInt(quantity.value); //parsInt analyse la valeur de la chaîne et renvoi 1er eniter
       if (quantityChoice === 0) {
         alert("Veuillez sélectionner une quantitée");
-        return
       } else {
         alert("Votre article est bien ajouté au panier");
       }
-
+  
       /*On vérifie le basketStorage (localStorage) de clé basket 
       si null on créer un tableau vide pour récuperer les données sinon on reforme l'objet à partir de la chaîne de caractère*/
 
@@ -97,34 +80,26 @@ promiseFetch.then((data) => { //promise Fetch
       let item = null;
       for (let i = 0; i < basket.length; i++) {
         let searchItem = basket[i];
+        console.log(searchItem);
         if (
-          searchItem.color === colorsChoice.value
-          && searchItem.id === urlProductId
+          searchItem.colors === colorsChoice.value
+          && searchItem.id === productId
         ) {
           item = i
         }
       };
       // ajout d'un nouvel article dans le panier si il n'y est pas
 
-      let newItem = {
-        id      : urlProductId,
-        name    : detailProduct.name,
-        image   : detailProduct.imageUrl,
-        alt     : detailProduct.altTxt,
-        colors  : colorsChoice.value,
-        quantity: quantityChoice,
-        price   : detailProduct.price,
-        totalPrice    : detailProduct.price * quantityChoice,
-
-      };
-      
       if (item === null) {
+        let newItem = {
+          id : productId,
+          colors: colorsChoice.value,
+          quantity: quantityChoice
+        }
         basket.push(newItem); //on push le newItem dans basket
       } else {
         basket[item].quantity += quantityChoice //sinon on ajuste la quantité
       };
-      console.log(basket[item].quantity);
-      console.log(quantityChoice);
       //Enregistrement en transformant l'objet en chaîne de caractère
 
       localStorage.setItem('basket', JSON.stringify(basket));
