@@ -176,7 +176,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
     })
     .catch(processError);
 
-
+    
     /* LE FORMULAIRE */
         
     //Création  de constante pour récupérer les inputs du DOM et les stocker
@@ -309,11 +309,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
         event.preventDefault();
         console.log("good");
     });
-
+    //CONDITION QUI NE PASSE PAS 
     if  ( valueFirstName && valuelastName && valueEmail && valueCity && valueAddress ){
         const basketStorage = JSON.parse(localStorage.getItem("preparedBasket"));
-        console.log(basketStorage);
-        console.log("ici");
+        console.log("test");
+        // console.log("ici");
         // let commandeId = [];
         // console.log(commandeFinal);
         // console.log(commandeId);
@@ -324,4 +324,5 @@ document.addEventListener("DOMContentLoaded", (event) => {
         //     console.log(commandeId);
         // }));
     }
+
 });
