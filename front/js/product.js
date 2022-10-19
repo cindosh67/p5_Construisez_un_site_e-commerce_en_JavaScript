@@ -15,8 +15,10 @@ const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url 
 //console.log(promiseFetch);
 
 
-promiseFetch.then((data) => { //promise Fetch
-  data.json().then((detailProduct) => { //demande de reponse en .json  
+//promise Fetch
+//demande de reponse en .json 
+promiseFetch.then((data) => { 
+  data.json().then((detailProduct) => {  
 
     //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
 
@@ -52,10 +54,11 @@ promiseFetch.then((data) => { //promise Fetch
         alert("Veuillez sélectionner une couleur");
         return;
       }
-
-      const quantityChoice = parseInt(quantity.value); //parsInt analyse la valeur de la chaîne et renvoi 1er eniter
-      if (quantityChoice === 0) {
-        alert("Veuillez sélectionner une quantitée");
+      //Variable avec parsInt pour analyse de la valeur en chaîne et renvoi 1er eniter
+      const quantityChoice = parseInt(quantity.value); 
+      
+      if (quantityChoice < 1 || quantityChoice > 100 ) {
+        alert("Veuillez sélectionner une quantitée entre 1 et 100 s'il vous plaît");
       } else {
         alert("Votre article est bien ajouté au panier");
       }
