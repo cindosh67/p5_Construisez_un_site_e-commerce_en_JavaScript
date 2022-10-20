@@ -1,5 +1,6 @@
+//Stockage  tableau pour la boucle du formulaire
 const contactBasket = [];
-
+//Variable
 let commandeProduct = JSON.parse(localStorage.getItem
     ("commande"));
 
@@ -250,6 +251,7 @@ function checkForm(preparedBasket) {
     
             preparedBasket.forEach((commande => {
                 contactBasket.push(commande.id);
+                console.log(contactBasket);
             }));
             
             const contact = {
@@ -262,8 +264,8 @@ function checkForm(preparedBasket) {
                 },
                 products : contactBasket
             };
-
-        fetch("http://localhost:3000/api/products/order", {
+        //Requêt POST 
+       /* fetch("http://localhost:3000/api/products/order", {
             
             method  : "POST",
             headers :  {"Content-Type": "application/json"},
@@ -271,6 +273,7 @@ function checkForm(preparedBasket) {
         })
             .then((response) => response.json())
             .then((promise) => {
+                //On stock la promise
                 let data = promise;
             
                 let dataCommande = {
@@ -280,43 +283,29 @@ function checkForm(preparedBasket) {
                 
                 }
                 console.log(data.orderId);
-            
+                // enregistrement localStorage
                 if(commandeProduct === null){
                     commandeProduct = [];
                     commandeProduct.push(dataCommande);
                     localStorage.setItem("contact", JSON.stringify(commandeProduct));
-                    console.log(commandeProduct);
+                    
                 }
                 else if(commandeProduct != null){
                     commandeProduct.push(dataCommande);
                     localStorage.setItem("contact", JSON.stringify(commandeProduct));
                     console.log(dataCommande);
                 }
-                //supprimer le panier après commande
+                //supprimer le localStorage après validation
+                //Redirection vers la page confirmation avec ID de commande
                 localStorage.clear("preparedBasket")
-                location.href = "confirmation.html?id=" + data.orderId;
-                
-                
-                    if (page.match("confirmation")) {
-                      let numCom = new URLSearchParams(document.location.search).get("id");
-                      // merci et mise en page
-                      document.querySelector("#orderId").innerHTML = `<br>${numCom}<br>Merci pour votre achat`;
-                      console.log("valeur de l'orderId venant de l'url: " + numCom);
-                      //réinitialisation du numero de commande
-                      numCom = undefined;
-                    } else {
-                      console.log("sur page cart");
-                    }
-                  
-
-                
+                location.href = "confirmation.html?id=" + data.orderId;                
             });
 
             }else{
                 alert("Veuillez remplir le formulaire correctement")
             };
         // console.log(contact);
-    });
+    });*/
 }
 
 
