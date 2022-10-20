@@ -111,6 +111,171 @@ function displayTotal(preparedBasket) {
     document.getElementById('totalQuantity').innerText = nbrArticles;
 }
 
+/* LE FORMULAIRE */
+function checkForm(preparedBasket) {
+
+    //Création  de constante pour récupérer les inputs du DOM et les stocker
+    const submit        = document.querySelector("#order");
+
+    const firstName     = document.querySelector("#firstName");
+    const lastName      = document.querySelector("#lastName");
+    const address       = document.querySelector("#address");
+    const city          = document.querySelector("#city");
+    const email         = document.querySelector("#email");
+    
+    let valueFirstName, valueLastName, valueEmail, valueCity, valueAddress;
+
+//Ecoute des l'input avec des conditions et des regex pour respecter certains caractères
+
+    firstName.addEventListener("input" , (event) => {
+
+        if(event.target.value.lengt == 0){
+            //error vide car l'utilisateur n'a encore rien complété
+            firstNameErrorMsg.innerHTML = " ";
+            valueFirstName = null;
+        }else if(event.target.value.length < 2 || event.target.value.length > 25){
+            firstNameErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
+            valueFirstName = null;
+        }
+        //Regex des lettres  et entre 3 et 25 caractères 
+        if (event.target.value.match(/^[a-z A-Z -]{1,25}$/)){
+            firstNameErrorMsg.innerHTML = ""
+            // La valeur que l'utilisateur à rentrer est = l'élement ciblé
+            valueFirstName = event.target.value; 
+            
+        };
+        //Si il est différent au reste alors la value reste null
+        if (!event.target.value.match(/^[a-z A-Z -]{1,25}$/) &&
+            event.target.value.length > 1 &&
+            event.target.value.length < 25){
+                firstNameErrorMsg.innerHTML = "Prénom ne doit pas contenir de caractères spécial, ni de chiffres..";
+                valueFirstName = null;
+            };
+    });
+
+    lastName.addEventListener("input" , (event) => {
+        
+        if(event.target.value.lengt == 0){
+            lastNameErrorMsg.innerHTML = " ";
+            valueLastName = null;
+        }else if(event.target.value.length < 2 || event.target.value.length > 25){
+            lastNameErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
+            valueLastName = null;
+        };
+        if (event.target.value.match(/^[a-z A-Z]{1,25}$/)){
+            lastNameErrorMsg.innerHTML = ""
+            valueLastName = event.target.value;
+
+        };
+        if (!event.target.value.match(/^[a-z A-Z]{1,25}$/) &&
+            event.target.value.length > 1 &&
+            event.target.value.length < 25){
+                lastNameErrorMsg.innerHTML = "Nom ne doit pas contenir de caractères spécial ni de chiffres..";
+                valueLastName = null;
+            };
+    });
+    address.addEventListener("input" ,  (event) => {
+        
+        if(event.target.value.lengt == 0){
+            addressErrorMsg.innerHTML = " ";
+            valueAddress = null;
+        }else if(event.target.value.length < 2 || event.target.value.length > 35){
+            addressErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
+            valueAddress = null;
+        };
+        if (event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,35}$/)){
+            addressErrorMsg.innerHTML = ""
+            valueAddress = event.target.value;
+
+        };
+        if (!event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,35}$/) &&
+            event.target.value.length > 2 &&
+            event.target.value.length < 25){
+                addressErrorMsg.innerHTML = "Addresse ne doit pas contenir de caractères spécial..";
+                valueAddress = null;
+            };
+    });
+
+
+    city.addEventListener("input" , (event) => {
+        
+        if(event.target.value.lengt == 0){
+            cityErrorMsg.innerHTML = " ";
+            valueCity = null;
+        }else if(event.target.value.length < 2 || event.target.value.length > 25){
+            cityErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
+            valueCity = null;
+        };
+        if (event.target.value.match(/^[a-z A-Z]{3,25}$/)){
+            cityErrorMsg.innerHTML = ""
+            valueCity = event.target.value;
+            
+        };
+        if (!event.target.value.match(/^[a-z A-Z]{3,25}$/) &&
+            event.target.value.length > 3 &&
+            event.target.value.length < 25){
+                cityErrorMsg.innerHTML = "La ville ne doit pas contenir de caractères spécial..";
+                valueCity = null;
+            };
+    });
+
+
+    email.addEventListener("input" , (event) =>  {
+        
+
+        if(event.target.value.lengt == 0){
+            emailErrorMsg.innerHTML = " ";
+            valueEmail = null;
+        }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)){
+            emailErrorMsg.innerHTML = ""
+            valueEmail = event.target.value;
+            
+        }
+        if(!event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) && !event.target.value.length == 0){
+            emailErrorMsg.innerHTML = " Email incorrect ex : Paul@gmail.com ";
+            valueEmail = null;
+        };
+    });
+
+    submit.addEventListener("click", (event) => { 
+        event.preventDefault();
+    
+        //Vérification du formulaire + création tableau pour y mettre contact en string et Array products
+        if  ( valueFirstName && valueLastName && valueAddress && valueCity && valueEmail ){
+            
+            let products = [];
+    
+            preparedBasket.forEach((commande => {
+                products.push(commande.id);
+            }));
+            console.log(products);
+            const contact = {
+                contact: {
+                    firstName   : valueFirstName,
+                    lastName    : valueLastName,
+                    address     : valueAddress,
+                    city        : valueCity,
+                    email       : valueEmail,
+                },
+               product : products
+            };
+    fetch("http://localhost:3000/api/products/order", {
+        method  : "POST",
+        headers :  {"content-type": "application/json"},
+        body    : JSON.stringify(contact, products),
+    })
+        .then((response) => response.json())
+        .then((promise) => {
+            let responseServer = promise;
+            console.log(responseServer);
+        })
+
+        }else{
+            alert("Veuillez remplir le formulaire correctement")
+        };
+    });
+}
+
 document.addEventListener("DOMContentLoaded", (event) => {
 
     // Récupération des produits de l'api
@@ -120,7 +285,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         .then((listProduct) => {
             //récupération du local storage et verifier si il est vide
             const localBasket = JSON.parse(localStorage.getItem('basket'));
-            const preparedBasket = prepareBasket(listProduct, localBasket);
+            var preparedBasket = prepareBasket(listProduct, localBasket);
             if (preparedBasket === null){
                 document.querySelector("h1").innerHTML =
                 "Vous n'avez pas d'article dans votre panier";
@@ -172,157 +337,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             }
             
             displayTotal(preparedBasket);
-            console.log(preparedBasket);
+            checkForm(preparedBasket);
     })
     .catch(processError);
-
-    
-    /* LE FORMULAIRE */
-        
-    //Création  de constante pour récupérer les inputs du DOM et les stocker
-    const submit        = document.querySelector("#order");
-
-    const firstName     = document.querySelector("#firstName");
-    const lastName      = document.querySelector("#lastName");
-    const address       = document.querySelector("#address");
-    const city          = document.querySelector("#city");
-    const email         = document.querySelector("#email");
-    
-    let valueFirstName, valueLastName, valueEmail, valueCity, valueAddress;
-
-//Ecoute des l'input avec des conditions et des regex pour respecter certains caractères
-
-    firstName.addEventListener("input" , (event) => {
-
-        if(event.target.value.lengt == 0){
-            //error vide car l'utilisateur n'a encore rien complété
-            firstNameErrorMsg.innerHTML = " ";
-            valueFirstName = null; //valeur null pour
-        }else if(event.target.value.length < 2 || event.target.value.length > 25){
-            firstNameErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
-            valueFirstName = null;
-        };
-        //Regex des lettres  et entre 3 et 25 caractères 
-        if (event.target.value.match(/^[a-z A-Z -]{3,25}$/)){
-            firstNameErrorMsg.innerHTML = ""
-            // La valeur que l'utilisateur à rentrer est = l'élement ciblé
-            valueFirstName = event.target.value; 
-            console.log(valueFirstName);
-        };
-        //Si il est différent au reste alors la value reste null
-        if (!event.target.value.match(/^[a-z A-Z -]{3,25}$/) &&
-            event.target.value.length > 3 &&
-            event.target.value.length < 25){
-                firstNameErrorMsg.innerHTML = "Prénom ne doit pas contenir de caractères spécial, ni de chiffres..";
-                valueFirstName = null;
-            };
-    });
-
-    lastName.addEventListener("input" , (event) => {
-        
-        if(event.target.value.lengt == 0){
-            lastNameErrorMsg.innerHTML = " ";
-            valueLastName = null;
-        }else if(event.target.value.length < 2 || event.target.value.length > 25){
-            lastNameErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
-            valueLastName = null;
-        };
-        if (event.target.value.match(/^[a-z A-Z]{3,25}$/)){
-            lastNameErrorMsg.innerHTML = ""
-            valueLastName = event.target.value;
-            console.log(valueLastName);
-
-        };
-        if (!event.target.value.match(/^[a-z A-Z]{3,25}$/) &&
-            event.target.value.length > 3 &&
-            event.target.value.length < 25){
-                lastNameErrorMsg.innerHTML = "Nom ne doit pas contenir de caractères spécial ni de chiffres..";
-                valueLastName = null;
-            };
-    });
-    address.addEventListener("input" ,  (event) => {
-        
-
-        if(event.target.value.lengt == 0){
-            addressErrorMsg.innerHTML = " ";
-            valueAddress = null;
-        }else if(event.target.value.length < 2 || event.target.value.length > 35){
-            addressErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
-            valueAddress = null;
-        };
-        if (event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,25}$/)){
-            addressErrorMsg.innerHTML = ""
-            valueAddress = event.target.value;
-            console.log(valueAddress);
-
-        };
-        if (!event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,25}$/) &&
-            event.target.value.length > 3 &&
-            event.target.value.length < 25){
-                addressErrorMsg.innerHTML = "Addresse ne doit pas contenir de caractères spécial..";
-                valueAddress = null;
-            };
-    });
-
-
-    city.addEventListener("input" , (event) => {
-        
-        if(event.target.value.lengt == 0){
-            cityErrorMsg.innerHTML = " ";
-            valueCity = null;
-        }else if(event.target.value.length < 3 || event.target.value.length > 25){
-            cityErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
-            valueCity = null;
-        };
-        if (event.target.value.match(/^[a-z A-Z]{3,25}$/)){
-            cityErrorMsg.innerHTML = ""
-            valueCity = event.target.value;
-            console.log(valueCity);
-        };
-        if (!event.target.value.match(/^[a-z A-Z]{3,25}$/) &&
-            event.target.value.length > 3 &&
-            event.target.value.length < 25){
-                cityErrorMsg.innerHTML = "La ville ne doit pas contenir de caractères spécial..";
-                valueCity = null;
-            };
-    });
-
-
-    email.addEventListener("input" , (event) =>  {
-        
-
-        if(event.target.value.lengt == 0){
-            emailErrorMsg.innerHTML = " ";
-            valueEmail = null;
-        }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)){
-            emailErrorMsg.innerHTML = ""
-            valueEmail = event.target.value;
-            console.log(valueEmail);
-        }
-        if(!event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) && !event.target.value.length == 0){
-            emailErrorMsg.innerHTML = " Email incorrect ex : Paul@gmail.com ";
-            valueEmail = null;
-        };
-    });
-
-    submit.addEventListener("click", (event) => { 
-        event.preventDefault();
-        console.log("good");
-    });
-    //CONDITION QUI NE PASSE PAS 
-    if  ( valueFirstName && valuelastName && valueEmail && valueCity && valueAddress ){
-        const basketStorage = JSON.parse(localStorage.getItem("preparedBasket"));
-        console.log("test");
-        // console.log("ici");
-        // let commandeId = [];
-        // console.log(commandeFinal);
-        // console.log(commandeId);
-
-        // commandeFinal.forEach((commande => {
-        //     commandeId.push(commande._id);
-            
-        //     console.log(commandeId);
-        // }));
-    }
-
 });
