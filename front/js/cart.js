@@ -1,3 +1,8 @@
+const contactBasket = [];
+
+let commandeProduct = JSON.parse(localStorage.getItem
+    ("commande"));
+
 
 //Function qui sera appelé dans le catch error
 function processError(err)  {
@@ -242,13 +247,11 @@ function checkForm(preparedBasket) {
     
         //Vérification du formulaire + création tableau pour y mettre contact en string et Array products
         if  ( valueFirstName && valueLastName && valueAddress && valueCity && valueEmail ){
-            
-            let products = [];
     
             preparedBasket.forEach((commande => {
-                products.push(commande.id);
+                contactBasket.push(commande.id);
             }));
-            console.log(products);
+            
             const contact = {
                 contact: {
                     firstName   : valueFirstName,
@@ -257,24 +260,65 @@ function checkForm(preparedBasket) {
                     city        : valueCity,
                     email       : valueEmail,
                 },
-               product : products
+                products : contactBasket
             };
-    fetch("http://localhost:3000/api/products/order", {
-        method  : "POST",
-        headers :  {"content-type": "application/json"},
-        body    : JSON.stringify(contact, products),
-    })
-        .then((response) => response.json())
-        .then((promise) => {
-            let responseServer = promise;
-            console.log(responseServer);
-        })
 
-        }else{
-            alert("Veuillez remplir le formulaire correctement")
-        };
+        fetch("http://localhost:3000/api/products/order", {
+            
+            method  : "POST",
+            headers :  {"Content-Type": "application/json"},
+            body    : JSON.stringify(contact),
+        })
+            .then((response) => response.json())
+            .then((promise) => {
+                let data = promise;
+            
+                let dataCommande = {
+                
+                contact : data.contact,
+                products : data.products
+                
+                }
+                console.log(data.orderId);
+            
+                if(commandeProduct === null){
+                    commandeProduct = [];
+                    commandeProduct.push(dataCommande);
+                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                    console.log(commandeProduct);
+                }
+                else if(commandeProduct != null){
+                    commandeProduct.push(dataCommande);
+                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                    console.log(dataCommande);
+                }
+                //supprimer le panier après commande
+                localStorage.clear("preparedBasket")
+                location.href = "confirmation.html?id=" + data.orderId;
+                
+                
+                    if (page.match("confirmation")) {
+                      let numCom = new URLSearchParams(document.location.search).get("id");
+                      // merci et mise en page
+                      document.querySelector("#orderId").innerHTML = `<br>${numCom}<br>Merci pour votre achat`;
+                      console.log("valeur de l'orderId venant de l'url: " + numCom);
+                      //réinitialisation du numero de commande
+                      numCom = undefined;
+                    } else {
+                      console.log("sur page cart");
+                    }
+                  
+
+                
+            });
+
+            }else{
+                alert("Veuillez remplir le formulaire correctement")
+            };
+        // console.log(contact);
     });
 }
+
 
 document.addEventListener("DOMContentLoaded", (event) => {
 
