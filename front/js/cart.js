@@ -129,7 +129,7 @@ function checkForm(preparedBasket) {
 
     firstName.addEventListener("input" , (event) => {
 
-        if(event.target.value.lengt == 0){
+        if(event.target.value.length == 0){
             //error vide car l'utilisateur n'a encore rien complété
             firstNameErrorMsg.innerHTML = " ";
             valueFirstName = null;
@@ -155,7 +155,7 @@ function checkForm(preparedBasket) {
 
     lastName.addEventListener("input" , (event) => {
         
-        if(event.target.value.lengt == 0){
+        if(event.target.value.length == 0){
             lastNameErrorMsg.innerHTML = " ";
             valueLastName = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 25){
@@ -176,7 +176,7 @@ function checkForm(preparedBasket) {
     });
     address.addEventListener("input" ,  (event) => {
         
-        if(event.target.value.lengt == 0){
+        if(event.target.value.length == 0){
             addressErrorMsg.innerHTML = " ";
             valueAddress = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 35){
@@ -199,7 +199,7 @@ function checkForm(preparedBasket) {
 
     city.addEventListener("input" , (event) => {
         
-        if(event.target.value.lengt == 0){
+        if(event.target.value.length == 0){
             cityErrorMsg.innerHTML = " ";
             valueCity = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 25){
@@ -223,7 +223,7 @@ function checkForm(preparedBasket) {
     email.addEventListener("input" , (event) =>  {
         
 
-        if(event.target.value.lengt == 0){
+        if(event.target.value.length == 0){
             emailErrorMsg.innerHTML = " ";
             valueEmail = null;
         }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)){
@@ -341,3 +341,4 @@ document.addEventListener("DOMContentLoaded", (event) => {
     })
     .catch(processError);
 });
+
