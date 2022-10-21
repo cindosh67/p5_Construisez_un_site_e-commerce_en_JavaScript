@@ -1,6 +1,6 @@
 //Stockage  tableau pour la boucle du formulaire
 const contactBasket = [];
-//Variable
+//Variable nouveau localStorage après validation formulair
 let commandeProduct = JSON.parse(localStorage.getItem
     ("commande"));
 
@@ -246,9 +246,9 @@ function checkForm(preparedBasket) {
     submit.addEventListener("click", (event) => { 
         event.preventDefault();
     
-        //Vérification du formulaire + création tableau pour y mettre contact en string et Array products
+        //Vérification du formulaire + création aray  contactBasket pour y mettre contact en string
         if  ( valueFirstName && valueLastName && valueAddress && valueCity && valueEmail ){
-    
+            //Boucle forEach pour récupérer l'ID produit
             preparedBasket.forEach((commande => {
                 contactBasket.push(commande.id);
                 console.log(contactBasket);
@@ -264,13 +264,15 @@ function checkForm(preparedBasket) {
                 },
                 products : contactBasket
             };
-        //Requêt POST 
-       /* fetch("http://localhost:3000/api/products/order", {
-            
-            method  : "POST",
-            headers :  {"Content-Type": "application/json"},
-            body    : JSON.stringify(contact),
-        })
+            console.log(preparedBasket);
+
+            //Requêt POST 
+            fetch("http://localhost:3000/api/products/order", {
+                
+                method  : "POST",
+                headers :  {"Content-Type": "application/json"},
+                body    : JSON.stringify(contact),
+            })
             .then((response) => response.json())
             .then((promise) => {
                 //On stock la promise
@@ -282,14 +284,14 @@ function checkForm(preparedBasket) {
                 products : data.products
                 
                 }
-                console.log(data.orderId);
-                // enregistrement localStorage
+                console.log(dataCommande);
+                //Condition si localStorage null on crée un array et on push les données de dataCommande
                 if(commandeProduct === null){
                     commandeProduct = [];
                     commandeProduct.push(dataCommande);
                     localStorage.setItem("contact", JSON.stringify(commandeProduct));
                     
-                }
+                  }// enregistrement localStorage  de contact et des produit après formulaire valide
                 else if(commandeProduct != null){
                     commandeProduct.push(dataCommande);
                     localStorage.setItem("contact", JSON.stringify(commandeProduct));
@@ -298,14 +300,14 @@ function checkForm(preparedBasket) {
                 //supprimer le localStorage après validation
                 //Redirection vers la page confirmation avec ID de commande
                 localStorage.clear("preparedBasket")
-                location.href = "confirmation.html?id=" + data.orderId;                
+                location.href = "confirmation.html?id=" + data.orderId;           
             });
 
             }else{
                 alert("Veuillez remplir le formulaire correctement")
             };
         // console.log(contact);
-    });*/
+    });
 }
 
 
@@ -374,4 +376,4 @@ document.addEventListener("DOMContentLoaded", (event) => {
     })
     .catch(processError);
 });
-
+    
