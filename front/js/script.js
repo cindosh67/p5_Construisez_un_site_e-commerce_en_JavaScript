@@ -10,18 +10,16 @@ promesseFetch.then((data) => {
   data.json().then((listProducts) => {
 
     //variable pour la construction HTML
-    let htmlText = "";
+    // let htmlText = "";
 
-    //boucle itératteur + variable produits (pour selectionner, stocker les produit )
+    //boucle itératteur + réponse de L'API (pour selectionner/stocker les produit )
 
     for (let i=0; i < listProducts.length; i++) {
       const products = listProducts[i];
-      //console.log(products);
+      // console.log(products);
 
-    //variable htmlText pour utiliser innerHTML sans trop faire travailler le DOM
-    
-
-      htmlText += `
+      document.querySelector("#items").innerHTML +=
+      `
         <a href="./product.html?id=${products._id}">
           <article>
             <img src=${products.imageUrl} alt=${products.altTxt}">
@@ -30,14 +28,12 @@ promesseFetch.then((data) => {
           </article>
         </a>
       `
-    console.log(htmlText)
-    
-    
-    // créer variable affichage de l'ID items pour afficher les produit dans le DOM avec innerHTML
-  
-
-    const affichage = document.querySelector("#items");
-    affichage.innerHTML = htmlText
-    }
+    };
   });
 })
+.catch((err) => {
+
+  document.querySelector(".titles").innerHTML = "<h1>erreur 404</h1>";
+  console.log("erreur 404, sur ressource api: " + err);
+
+});
