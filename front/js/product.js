@@ -1,8 +1,10 @@
-let colorsChoice = document.querySelector('#colors'); //selectionner et stocker Id colors
+//Sélectionner les éléments et les stocker pour les réutiliser plus tard
 
-let btn = document.getElementById("addToCart")//sélectionner et stocker pour réutiliser la variable plus tard
+let colorsChoice = document.querySelector('#colors'); 
 
-let quantity = document.querySelector("#quantity"); //sélectionner et stocker pour réutiliser la variable plus tard 
+let btn = document.getElementById("addToCart");
+
+let quantity = document.querySelector("#quantity");
 
 /*******************************  Recherche de l'url searchParams  ********************/
 
@@ -18,63 +20,80 @@ const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url 
 //promise Fetch
 //demande de reponse en .json 
 promiseFetch.then((data) => { 
-  data.json().then((detailProduct) => {  
+  data.json().then((listProducts) => {  
 
+    option(listProducts);
+    btnEcoute(quantity, colorsChoice);
+    // basket();
+
+  });
+});
+
+  function option(listProducts) {
+    
     //récupération des details grâce au donné et on affiche au bon endroit en selectionnant les Class et ID concerné
 
-    document.title = detailProduct.name;
-    document.querySelector("#title").textContent += detailProduct.name;
-    document.querySelector(".item__img").innerHTML += `<img src=${detailProduct.imageUrl} alt=${detailProduct.altTxt}">`;
-    document.querySelector("#price").textContent += detailProduct.price;
-    document.querySelector("#description").textContent += detailProduct.description;
+    document.title = listProducts.name;
+    document.querySelector("#title").textContent += listProducts.name;
+    document.querySelector(".item__img").innerHTML += `<img src=${listProducts.imageUrl} alt=${listProducts.altTxt}">`;
+    document.querySelector("#price").textContent += listProducts.price;
+    document.querySelector("#description").textContent += listProducts.description;
 
     //boucle pour avoir les couleurs + création de la balise option pour chacune des couleurs
 
-    for (let i = 0; i < detailProduct.colors.length; i++) {
-      let color = detailProduct.colors[i];
+    for (let i = 0; i < listProducts.colors.length; i++) {
+      let color = listProducts.colors[i];
       let option = document.createElement("option");
 
       option.innerText = `${color}`;
       option.value = `${color}`;
 
       colorsChoice.appendChild(option);
+
     }
+    
+  };
 
-    /******************************* Le Local Storage  ********************/
+    
+function btnEcoute(colorsChoice) {
+  //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
 
-    //Ecoute du bouton pour la selection du canapé et condition si les valeurs ne sont pas selectionnées
+  let bouton = document.getElementById("addToCart");
 
-    let bouton = document.getElementById("addToCart");
+  bouton.addEventListener("click", () => {
 
-    bouton.addEventListener("click", () => {
+    // condition si aucune couleur ou quantitées choisi 
 
-      // condition si aucune couleur ou quantitées choisi 
+    if (colorsChoice.value === "") {
+      alert("Veuillez sélectionner une couleur");
+      return;
+    }
+    //Variable avec parsInt pour analyse de la valeur en chaîne et renvoi 1er eniter
+    const quantityChoice = parseInt(quantity.value); 
+    
+    if (quantityChoice < 1 || quantityChoice > 100 ) {
+      alert("Veuillez sélectionner une quantitée entre 1 et 100 s'il vous plaît");
+    } else {
+      alert("Votre article est bien ajouté au panier");
+    }
+    basket(quantityChoice); 
+  });
+};
+     /******************************* Le Local Storage  ********************/
 
-      if (colorsChoice.value === "") {
-        alert("Veuillez sélectionner une couleur");
-        return;
-      }
-      //Variable avec parsInt pour analyse de la valeur en chaîne et renvoi 1er eniter
-      const quantityChoice = parseInt(quantity.value); 
-      
-      if (quantityChoice < 1 || quantityChoice > 100 ) {
-        alert("Veuillez sélectionner une quantitée entre 1 et 100 s'il vous plaît");
-      } else {
-        alert("Votre article est bien ajouté au panier");
-      }
-  
-      /*On vérifie le basketStorage (localStorage) de clé basket 
+function basket(quantityChoice) {
+   /*On vérifie le basketStorage (localStorage) de clé basket 
       si null on créer un tableau vide pour récuperer les données sinon on reforme l'objet à partir de la chaîne de caractère*/
 
       const basketStorage = localStorage.getItem("basket");
       
-
       let basket = null
       if (basketStorage === null) {
         basket = [];
       } else {
         basket = JSON.parse(basketStorage);
       }
+      console.log(basket);
 
       // Rechercher si il y a deja un article identique avec la meme couleur
       // Si on le trouve on stock sa position dans le tableau de la variable item
@@ -106,7 +125,4 @@ promiseFetch.then((data) => {
       //Enregistrement en transformant l'objet en chaîne de caractère
 
       localStorage.setItem('basket', JSON.stringify(basket));
-
-    })
-  });
-});
+}

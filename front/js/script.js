@@ -8,10 +8,7 @@ const promesseFetch = fetch(url);
 
 promesseFetch.then((data) => {
   data.json().then((listProducts) => {
-
-    //variable pour la construction HTML
-    // let htmlText = "";
-
+    
     //boucle itératteur + réponse de L'API (pour selectionner/stocker les produit )
 
     for (let i=0; i < listProducts.length; i++) {
