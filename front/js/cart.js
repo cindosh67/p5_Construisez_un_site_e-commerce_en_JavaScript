@@ -25,7 +25,8 @@ function retrievLocal(listProduct) {
     displayTotal(preparedBasket);
     listenQuantity(listProduct);
     listenDelet(listProduct);
-    checkForm(preparedBasket);
+    checkForm();
+    listenOrder(preparedBasket);
 }
 
 // Function qui prepare le panier 
@@ -123,8 +124,6 @@ function listenQuantity(listProduct) {
     };    
 };
 
-
-
 //Function de suppréssion d'article
 //Récupération du localStorage
 function removeCartItem(productId, productColor) {
@@ -142,7 +141,7 @@ function removeCartItem(productId, productColor) {
     localStorage.setItem('basket', JSON.stringify(newBasket));
     return (newBasket);
 }
-
+//Ecoute du bouton supprimer
 function listenDelet(listProduct) {
     
     //Création variable suppréssion
@@ -168,9 +167,8 @@ function listenDelet(listProduct) {
                 "Vous n'avez pas d'article dans votre panier";
             }
         });
-        
-    }
-}
+    };
+};
 //Function pour les quantitées total + prix total avec la methode reduce
 function displayTotal(preparedBasket) {
     if (preparedBasket === null) {
@@ -190,7 +188,7 @@ function displayTotal(preparedBasket) {
 }
 
 /* LE FORMULAIRE */
-function checkForm(preparedBasket) {
+
 
     //Création  de constante pour récupérer les inputs du DOM et les stocker
     const submit        = document.querySelector("#order");
@@ -202,6 +200,8 @@ function checkForm(preparedBasket) {
     const email         = document.querySelector("#email");
     
     let valueFirstName, valueLastName, valueEmail, valueCity, valueAddress;
+
+function checkForm() {
 
 //Ecoute des l'input avec des conditions et des regex pour respecter certains caractères
 
@@ -273,8 +273,6 @@ function checkForm(preparedBasket) {
                 valueAddress = null;
             };
     });
-
-
     city.addEventListener("input" , (event) => {
         
         if(event.target.value.length === 0){
@@ -284,37 +282,37 @@ function checkForm(preparedBasket) {
             cityErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
             valueCity = null;
         };
-        if (event.target.value.match(/^[a-z A-Z]{3,25}$/)){
+        if (event.target.value.match(/^[a-z A-Z]{2,25}$/)){
             cityErrorMsg.innerHTML = ""
             valueCity = event.target.value;
             
         };
-        if (!event.target.value.match(/^[a-z A-Z]{3,25}$/) &&
-            event.target.value.length > 3 &&
+        if (!event.target.value.match(/^[a-z A-Z]{2,25}$/) &&
+            event.target.value.length > 2 &&
             event.target.value.length < 25){
                 cityErrorMsg.innerHTML = "La ville ne doit pas contenir de caractères spécial..";
                 valueCity = null;
             };
     });
-
-
     email.addEventListener("input" , (event) =>  {
         
-
         if(event.target.value.length === 0){
             emailErrorMsg.innerHTML = " ";
             valueEmail = null;
-        }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)){
+        }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,3}$/)){
             emailErrorMsg.innerHTML = ""
             valueEmail = event.target.value;
             
         }
-        if(!event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/) && !event.target.value.length == 0){
+        if(!event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,3}$/) && !event.target.value.length == 0){
             emailErrorMsg.innerHTML = " Email incorrect ex : Paul@gmail.com ";
             valueEmail = null;
         };
     });
-
+    
+}
+function listenOrder(preparedBasket) {
+    
     submit.addEventListener("click", (event) => { 
         event.preventDefault();
     
@@ -323,7 +321,7 @@ function checkForm(preparedBasket) {
             //Boucle forEach pour récupérer l'ID produit
             preparedBasket.forEach((commande => {
                 contactBasket.push(commande.id);
-                console.log(contactBasket);
+                console.log("l'id produit panier" + contactBasket);
             }));
             
             const contact = {
@@ -336,54 +334,54 @@ function checkForm(preparedBasket) {
                 },
                 products : contactBasket
             };
-            console.log(preparedBasket);
+            console.log( contact);
 
-            //Requêt POST 
+            // REQUETE FETCH pour poster "voir route backend"
+
             fetch("http://localhost:3000/api/products/order", {
                 
                 method  : "POST",
                 headers :  {"Content-Type": "application/json"},
-                body    : JSON.stringify(contact),
+                body    : JSON.stringify(contact), //transformer chaîne
             })
             .then((response) => response.json())
             .then((promise) => {
                 //On stock la promise
                 let data = promise;
-            
+                console.log(data);
+
                 let dataCommande = {
                 
-                contact : data.contact,
-                products : data.products
-                
-                }
-                console.log(dataCommande);
-                //Condition si localStorage null on crée un array et on push les données de dataCommande
-                if(commandeProduct === null){
-                    commandeProduct = [];
-                    commandeProduct.push(dataCommande);
-                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                    contact : data.contact,
+                    products : data.products
                     
-                  }// enregistrement localStorage  de contact et des produit après formulaire valide
-                else if(commandeProduct != null){
-                    commandeProduct.push(dataCommande);
-                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
-                    console.log(dataCommande);
                 }
+                // console.log(dataCommande);
+                // //Condition si localStorage null on crée un array et on push les données de dataCommande
+                // if(commandeProduct === null){
+                //     commandeProduct = [];
+                //     commandeProduct.push(dataCommande);
+                //     localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                    
+                //     }// enregistrement localStorage  de contact et des produit après formulaire valide
+                // else if(commandeProduct != null){
+                //     commandeProduct.push(dataCommande);
+                //     localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                //     console.log(dataCommande);
+                // }
                 //supprimer le localStorage après validation
-                //Redirection vers la page confirmation avec ID de commande
-                localStorage.clear("preparedBasket")
-                location.href = "confirmation.html?id=" + data.orderId;           
+                // // //Redirection vers la page confirmation avec ID de commande
+                // localStorage.clear("preparedBasket")
+                // location.href = "confirmation.html?id=" + data.orderId;           
             });
-
-            }else{
-                alert("Veuillez remplir le formulaire correctement")
-            };
-        // console.log(contact);
+           
+        }else{
+        alert("Veuillez remplir le formulaire correctement")
+        };
     });
 }
 
 
-document.addEventListener("DOMContentLoaded", (event) => {
 
     // Récupération des produits de l'api
 
@@ -393,24 +391,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
             
             retrievLocal(listProduct)
 
-            // //Création constante pour les boutons quantité
-            // const listInput = document.getElementsByClassName('itemQuantity');
-            // //Une boucle for avec écoute sur le changement
-            // //Récupération de la value de target en entier
-            // //Methode closest () pour renvoyer l'ancêtre le plus proche 
-            // for (let input of listInput) {
-            //     input.addEventListener('change', (event) => {
-            //         const target = event.target;
-            //         const quantity = parseInt(target.value);
-            //         const dataset = target.closest('article').dataset;
-            //         //Variable qui est = à la fonction modifier de la qua quantité
-            //         const newLocalBasket = setCartItemQuantity(quantity, dataset.id, dataset.color);
-            //         //Nouveau Localstorage
-            //         const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
-            //         displayTotal(newPreparedBasket);
-            //     });
-            // }
         })
         .catch(processError);
-});
+    
     
