@@ -11,11 +11,11 @@ let quantity = document.querySelector("#quantity");
 let urlProduct = new URLSearchParams (document.location.search);
 
 let productId = urlProduct.get("id");
+// console.log(productId);
 
 const urlDetail = `http://localhost:3000/api/products/${productId}`
 const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url API 
-//console.log(promiseFetch);
-
+// console.log(urlDetail);
 
 //promise Fetch
 //demande de reponse en .json 
@@ -23,9 +23,11 @@ promiseFetch.then((data) => {
   data.json().then((listProducts) => {  
 
     option(listProducts);
-    btnEcoute(quantity, colorsChoice);
-    // basket();
 
+  })
+  .catch((err) => {
+    document.querySelector(".item").innerHTML = "<h1>erreur 404</h1>";
+    console.log("erreur 404, sur ressource api: " + err);
   });
 });
 
@@ -39,19 +41,21 @@ promiseFetch.then((data) => {
     document.querySelector("#price").textContent += listProducts.price;
     document.querySelector("#description").textContent += listProducts.description;
 
-    //boucle pour avoir les couleurs + création de la balise option pour chacune des couleurs
+    //boucle pour rechercher les couleurs 
+    //on pointe et on stock option dans une variable 
 
     for (let i = 0; i < listProducts.colors.length; i++) {
       let color = listProducts.colors[i];
       let option = document.createElement("option");
-
+      // console.log(option);
       option.innerText = `${color}`;
       option.value = `${color}`;
 
       colorsChoice.appendChild(option);
 
     }
-    
+        btnEcoute( colorsChoice);
+
   };
 
     
@@ -78,6 +82,7 @@ function btnEcoute(colorsChoice) {
     }
     basket(quantityChoice); 
   });
+  // console.log(bouton);
 };
      /******************************* Le Local Storage  ********************/
 
@@ -93,7 +98,7 @@ function basket(quantityChoice) {
       } else {
         basket = JSON.parse(basketStorage);
       }
-      console.log(basket);
+      // console.log(basket);
 
       // Rechercher si il y a deja un article identique avec la meme couleur
       // Si on le trouve on stock sa position dans le tableau de la variable item
@@ -102,7 +107,6 @@ function basket(quantityChoice) {
       let item = null;
       for (let i = 0; i < basket.length; i++) {
         let searchItem = basket[i];
-        console.log(searchItem);
         if (
           searchItem.colors === colorsChoice.value
           && searchItem.id === productId

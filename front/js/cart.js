@@ -1,6 +1,6 @@
-//Stockage  tableau pour la boucle du formulaire
+//constante     tableau pour la boucle du formulaire
 const contactBasket = [];
-//Variable nouveau localStorage après validation formulair
+//Variable nouveau localStorage après validation formulaire
 let commandeProduct = JSON.parse(localStorage.getItem
     ("commande"));
 
@@ -10,8 +10,27 @@ function processError(err)  {
     document.querySelector("#cartAndFormContainer").innerHTML = "<h1>erreur 404</h1>";
     console.error("erreur 404, sur ressource api: " + err);
 }
+//Function récupération localStorage et une condition si null
+function retrievLocal(listProduct) {
+    
+    //récupération du local storage et verifier si il est vide
+    const localBasket = JSON.parse(localStorage.getItem('basket'));
+    var preparedBasket = prepareBasket(listProduct, localBasket);
+    if (preparedBasket === null){
+        document.querySelector("h1").innerHTML =
+        "Vous n'avez pas d'article dans votre panier";
+        return;
+    }
+    displayCart(preparedBasket)
+    displayTotal(preparedBasket);
+    listenQuantity(listProduct);
+    listenDelet(listProduct);
+    checkForm(preparedBasket);
+}
+
 // Function qui prepare le panier 
 function prepareBasket(listProduct, basketStorage) {
+    
     if (basketStorage === null || basketStorage.length < 1) {
         return (null);
     } else {
@@ -65,9 +84,7 @@ function displayCart(preparedBasket) {
         </article>`
     ).join('');
 };
-
-//Function modif quantité avec parametre quantité, ID, COLEUR 
-//Récupération du localStorage => boucle avec itération => condition sur l'id et la couleur du produit
+//function Récupération du localStorage => boucle avec itération => condition sur l'id et la couleur du produit si égal on ajuste la quantité
 function setCartItemQuantity(quantity, productId, productColor) {
     
     const localBasket = JSON.parse(localStorage.getItem('basket'));
@@ -76,12 +93,38 @@ function setCartItemQuantity(quantity, productId, productColor) {
         if (item.colors === productColor && item.id === productId) {
             localBasket[index].quantity = quantity;
             break;
-        }
-    }
+        };
+    };
     //Enregistrement du localStorage 
     localStorage.setItem('basket', JSON.stringify(localBasket));
+    // console.log(localBasket);
     return (localBasket);
-}
+};
+//Function écoute changement des boutons de quantité
+function listenQuantity(listProduct) {
+
+    //Création constante pour les boutons quantité
+    const listInput = document.getElementsByClassName('itemQuantity');
+    //Une boucle for avec écoute sur le changement
+    //Récupération de la value de target en entier
+    //Methode closest () pour renvoyer l'ancêtre le plus proche 
+    for (let input of listInput) {
+        input.addEventListener('change', (event) => {
+            const target = event.target;
+            const quantity = parseInt(target.value);
+            const dataset = target.closest('article').dataset;
+            //Variable qui est = à la fonction modifier de la qua quantité
+            const newLocalBasket = setCartItemQuantity(quantity, dataset.id, dataset.color);
+            //Nouveau Localstorage
+            const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
+            displayTotal(newPreparedBasket);
+            console.log(newPreparedBasket);
+        });
+    };    
+};
+
+
+
 //Function de suppréssion d'article
 //Récupération du localStorage
 function removeCartItem(productId, productColor) {
@@ -98,6 +141,35 @@ function removeCartItem(productId, productColor) {
     //On enregistre le nouveau panier dans le localStorage
     localStorage.setItem('basket', JSON.stringify(newBasket));
     return (newBasket);
+}
+
+function listenDelet(listProduct) {
+    
+    //Création variable suppréssion
+    const deleteItems = document.getElementsByClassName('deleteItem');
+    //Une boucle for avec écoute sur le bouton
+    //Récupération de la value de target en entier
+    //Methode closest () pour renvoyer l'ancêtre le plus proche 
+    for (let deleteItem of deleteItems) {
+        deleteItem.addEventListener('click', (event) => {
+            const target = event.target;
+            const articleElement = target.closest('article');
+            const sectionElement = target.closest('section');
+            const dataset = articleElement.dataset;
+            // variable qui est = à la fonction suppréssion
+            const newLocalBasket = removeCartItem(dataset.id, dataset.color);
+            // variable avec nouveau LocalStorage
+            const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
+            sectionElement.removeChild(articleElement);
+            //Fonction avec en parametre le nouveau LocalStorage
+            displayTotal(newPreparedBasket);
+            if (newPreparedBasket === null){
+                document.querySelector("h1").innerHTML =
+                "Vous n'avez pas d'article dans votre panier";
+            }
+        });
+        
+    }
 }
 //Function pour les quantitées total + prix total avec la methode reduce
 function displayTotal(preparedBasket) {
@@ -135,7 +207,7 @@ function checkForm(preparedBasket) {
 
     firstName.addEventListener("input" , (event) => {
 
-        if(event.target.value.length == 0){
+        if(event.target.value.length === 0){
             //error vide car l'utilisateur n'a encore rien complété
             firstNameErrorMsg.innerHTML = " ";
             valueFirstName = null;
@@ -161,7 +233,7 @@ function checkForm(preparedBasket) {
 
     lastName.addEventListener("input" , (event) => {
         
-        if(event.target.value.length == 0){
+        if(event.target.value.length === 0){
             lastNameErrorMsg.innerHTML = " ";
             valueLastName = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 25){
@@ -182,7 +254,7 @@ function checkForm(preparedBasket) {
     });
     address.addEventListener("input" ,  (event) => {
         
-        if(event.target.value.length == 0){
+        if(event.target.value.length === 0){
             addressErrorMsg.innerHTML = " ";
             valueAddress = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 35){
@@ -205,7 +277,7 @@ function checkForm(preparedBasket) {
 
     city.addEventListener("input" , (event) => {
         
-        if(event.target.value.length == 0){
+        if(event.target.value.length === 0){
             cityErrorMsg.innerHTML = " ";
             valueCity = null;
         }else if(event.target.value.length < 2 || event.target.value.length > 25){
@@ -229,7 +301,7 @@ function checkForm(preparedBasket) {
     email.addEventListener("input" , (event) =>  {
         
 
-        if(event.target.value.length == 0){
+        if(event.target.value.length === 0){
             emailErrorMsg.innerHTML = " ";
             valueEmail = null;
         }else if ( event.target.value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)){
@@ -318,62 +390,27 @@ document.addEventListener("DOMContentLoaded", (event) => {
     fetch("http://localhost:3000/api/products")
         .then((res) => res.json())
         .then((listProduct) => {
-            //récupération du local storage et verifier si il est vide
-            const localBasket = JSON.parse(localStorage.getItem('basket'));
-            var preparedBasket = prepareBasket(listProduct, localBasket);
-            if (preparedBasket === null){
-                document.querySelector("h1").innerHTML =
-                "Vous n'avez pas d'article dans votre panier";
-                return;
-            }
-            displayCart(preparedBasket);
-
-            //Création variable pour les boutons quantité
-            const listInput = document.getElementsByClassName('itemQuantity');
-            //Une boucle for avec écoute sur le changement
-            //Récupération de la value de target en entier
-            //Methode closest () pour renvoyer l'ancêtre le plus proche 
-            for (let input of listInput) {
-                input.addEventListener('change', (event) => {
-                    const target = event.target;
-                    const quantity = parseInt(target.value);
-                    const dataset = target.closest('article').dataset;
-                    //Variable qui est = à la fonction modifier quantité
-                    const newLocalBasket = setCartItemQuantity(quantity, dataset.id, dataset.color);
-                    //Nouveau Localstorage
-                    const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
-                    displayTotal(newPreparedBasket);
-                });
-            }
-
-            //Création variable suppréssion
-            const deleteItems = document.getElementsByClassName('deleteItem');
-            //Une boucle for avec écoute sur le bouton
-            //Récupération de la value de target en entier
-            //Methode closest () pour renvoyer l'ancêtre le plus proche 
-            for (let deleteItem of deleteItems) {
-                deleteItem.addEventListener('click', (event) => {
-                    const target = event.target;
-                    const articleElement = target.closest('article');
-                    const sectionElement = target.closest('section');
-                    const dataset = articleElement.dataset;
-                    // variable qui est = à la fonction suppréssion
-                    const newLocalBasket = removeCartItem(dataset.id, dataset.color);
-                    // variable avec nouveau LocalStorage
-                    const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
-                    sectionElement.removeChild(articleElement);
-                    //Fonction avec en parametre le nouveau LocalStorage
-                    displayTotal(newPreparedBasket);
-                    if (newPreparedBasket === null){
-                        document.querySelector("h1").innerHTML =
-                        "Vous n'avez pas d'article dans votre panier";
-                    }
-                });
-            }
             
-            displayTotal(preparedBasket);
-            checkForm(preparedBasket);
-    })
-    .catch(processError);
+            retrievLocal(listProduct)
+
+            // //Création constante pour les boutons quantité
+            // const listInput = document.getElementsByClassName('itemQuantity');
+            // //Une boucle for avec écoute sur le changement
+            // //Récupération de la value de target en entier
+            // //Methode closest () pour renvoyer l'ancêtre le plus proche 
+            // for (let input of listInput) {
+            //     input.addEventListener('change', (event) => {
+            //         const target = event.target;
+            //         const quantity = parseInt(target.value);
+            //         const dataset = target.closest('article').dataset;
+            //         //Variable qui est = à la fonction modifier de la qua quantité
+            //         const newLocalBasket = setCartItemQuantity(quantity, dataset.id, dataset.color);
+            //         //Nouveau Localstorage
+            //         const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
+            //         displayTotal(newPreparedBasket);
+            //     });
+            // }
+        })
+        .catch(processError);
 });
     
