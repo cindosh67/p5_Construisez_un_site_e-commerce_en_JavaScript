@@ -2,8 +2,8 @@
 
 let colorsChoice = document.querySelector('#colors'); 
 
-let btn = document.getElementById("addToCart");
-
+let btn = addToCart;
+console.log(btn);
 let quantity = document.querySelector("#quantity");
 
 /*******************************  Recherche de l'url searchParams  ********************/
@@ -21,7 +21,7 @@ const promiseFetch = fetch(urlDetail); //créer varible promesse de Fetch + url 
 //demande de reponse en .json 
 promiseFetch.then((data) => { 
   data.json().then((listProducts) => {  
-
+    // console.log(listProducts);
     option(listProducts);
 
   })
@@ -55,8 +55,7 @@ promiseFetch.then((data) => {
 
     }
         btnEcoute( colorsChoice);
-
-  };
+    };
 
     
 function btnEcoute(colorsChoice) {
@@ -95,8 +94,10 @@ function basket(quantityChoice) {
       let basket = null
       if (basketStorage === null) {
         basket = [];
+        console.log(basket);
       } else {
         basket = JSON.parse(basketStorage);
+        console.log(basket);
       }
       // console.log(basket);
 
@@ -106,6 +107,7 @@ function basket(quantityChoice) {
 
       let item = null;
       for (let i = 0; i < basket.length; i++) {
+        // console.log(basket.length);
         let searchItem = basket[i];
         if (
           searchItem.colors === colorsChoice.value

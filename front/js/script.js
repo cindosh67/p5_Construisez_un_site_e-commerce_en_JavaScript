@@ -1,5 +1,5 @@
 const url = 'http://localhost:3000/api/products'
-
+// console.log(url);
 //créer varible promesse = Fetch + url API 
 
 const promesseFetch = fetch(url);
@@ -8,12 +8,12 @@ const promesseFetch = fetch(url);
 
 promesseFetch.then((data) => {
   data.json().then((listProducts) => {
-    
+    console.log(listProducts);
     //boucle itératteur + réponse de L'API (pour selectionner/stocker les produit )
 
     for (let i=0; i < listProducts.length; i++) {
       const products = listProducts[i];
-      // console.log(products);
+      console.log(products);
 
       document.querySelector("#items").innerHTML +=
       `

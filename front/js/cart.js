@@ -15,7 +15,9 @@ function retrievLocal(listProduct) {
     
     //récupération du local storage et verifier si il est vide
     const localBasket = JSON.parse(localStorage.getItem('basket'));
-    var preparedBasket = prepareBasket(listProduct, localBasket);
+    // console.log(localBasket);
+    const preparedBasket = prepareBasket(listProduct, localBasket);
+    // console.log(preparedBasket);
     if (preparedBasket === null){
         document.querySelector("h1").innerHTML =
         "Vous n'avez pas d'article dans votre panier";
@@ -31,6 +33,7 @@ function retrievLocal(listProduct) {
 
 // Function qui prepare le panier 
 function prepareBasket(listProduct, basketStorage) {
+    // console.log(basketStorage);
     
     if (basketStorage === null || basketStorage.length < 1) {
         return (null);
@@ -152,13 +155,19 @@ function listenDelet(listProduct) {
     for (let deleteItem of deleteItems) {
         deleteItem.addEventListener('click', (event) => {
             const target = event.target;
+            console.log(target);
             const articleElement = target.closest('article');
+            console.log(articleElement);
             const sectionElement = target.closest('section');
+            console.log(sectionElement);
             const dataset = articleElement.dataset;
+            console.log(dataset);
             // variable qui est = à la fonction suppréssion
             const newLocalBasket = removeCartItem(dataset.id, dataset.color);
+            
             // variable avec nouveau LocalStorage
             const newPreparedBasket = prepareBasket(listProduct, newLocalBasket);
+            console.log(newPreparedBasket);
             sectionElement.removeChild(articleElement);
             //Fonction avec en parametre le nouveau LocalStorage
             displayTotal(newPreparedBasket);
@@ -257,17 +266,17 @@ function checkForm() {
         if(event.target.value.length === 0){
             addressErrorMsg.innerHTML = " ";
             valueAddress = null;
-        }else if(event.target.value.length < 2 || event.target.value.length > 35){
+        }else if(event.target.value.length < 3 || event.target.value.length > 35){
             addressErrorMsg.innerHTML = "Votre saisie est trop courte ou trop longue"
             valueAddress = null;
         };
-        if (event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,35}$/)){
+        if (event.target.value.match(/^[0-9]{1,4}[ a-z A-Z ,]{3,35}$/)){
             addressErrorMsg.innerHTML = ""
             valueAddress = event.target.value;
 
         };
-        if (!event.target.value.match(/^[0-9]{1,4}[a-z A-Z ,]{2,35}$/) &&
-            event.target.value.length > 2 &&
+        if (!event.target.value.match(/^[0-9]{1,4}[ a-z A-Z ,]{3,35}$/) &&
+            event.target.value.length > 3 &&
             event.target.value.length < 25){
                 addressErrorMsg.innerHTML = "Addresse ne doit pas contenir de caractères spécial..";
                 valueAddress = null;
@@ -348,33 +357,44 @@ function listenOrder(preparedBasket) {
             .then((promise) => {
                 //On stock la promise
                 let data = promise;
-                console.log(data);
+                // console.log(data);
 
                 let dataCommande = {
-                
                     contact : data.contact,
                     products : data.products
-                    
                 }
-                // console.log(dataCommande);
-                // //Condition si localStorage null on crée un array et on push les données de dataCommande
-                // if(commandeProduct === null){
-                //     commandeProduct = [];
-                //     commandeProduct.push(dataCommande);
-                //     localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                console.log(dataCommande);
+                //Condition si localStorage null on crée un array vide 
+                // et on push les données de dataCommande dans le nouveau localStorage puis on enregistre contact et produit
+                if(commandeProduct === null){
+                    commandeProduct = [];
+                    commandeProduct.push(dataCommande);
+                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
                     
-                //     }// enregistrement localStorage  de contact et des produit après formulaire valide
-                // else if(commandeProduct != null){
-                //     commandeProduct.push(dataCommande);
-                //     localStorage.setItem("contact", JSON.stringify(commandeProduct));
-                //     console.log(dataCommande);
-                // }
-                //supprimer le localStorage après validation
-                // // //Redirection vers la page confirmation avec ID de commande
-                // localStorage.clear("preparedBasket")
-                // location.href = "confirmation.html?id=" + data.orderId;           
+                    }// on pousse les nouveau produit et enregistrement localStorage  de contact et des produit après formulaire valide
+                else if(commandeProduct != null){
+                    commandeProduct.push(dataCommande);
+                    localStorage.setItem("contact", JSON.stringify(commandeProduct));
+                    console.log(dataCommande);
+                }
+                // supprimer le localStorage après validation
+                //Redirection vers la page confirmation avec ID de commande
+                localStorage.clear("preparedBasket")
+                location.href = "confirmation.html?id=" + data.orderId;
+                
+                //Pour éviter d'envoyer la commande plusieur fois vider les valeurs
+                firstName.value = "";
+                lastName.value  = "";
+                address.value   = "";
+                city.value      = "";
+                email.value     = "";
+
+                valueFirstName  = null;
+                valueLastName   = null;
+                valueAddress    = null;
+                valueCity       = null;
+                valueEmail      = null;
             });
-           
         }else{
         alert("Veuillez remplir le formulaire correctement")
         };
