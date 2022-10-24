@@ -51,12 +51,10 @@ function prepareBasket(listProduct, basketStorage) {
                     detailProduct.description = listProduct[i].description;
                     detailProduct.alt = listProduct[i].altTxt;
                 };
-            };
-            
+            };  
         };
         return (basketStorage);
-    };
-    
+    };  
 };
 
 // Fonction d'affichage d'un panier 
@@ -351,7 +349,7 @@ function listenOrder(preparedBasket) {
                 
                 method  : "POST",
                 headers :  {"Content-Type": "application/json"},
-                body    : JSON.stringify(contact), //transformer chaîne
+                body    : JSON.stringify(contact), //transformer l'obecjt en chaîne de caractère
             })
             .then((response) => response.json())
             .then((promise) => {

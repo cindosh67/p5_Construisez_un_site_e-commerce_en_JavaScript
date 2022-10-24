@@ -94,7 +94,6 @@ function basket(quantityChoice) {
       let basket = null
       if (basketStorage === null) {
         basket = [];
-        console.log(basket);
       } else {
         basket = JSON.parse(basketStorage);
         console.log(basket);
@@ -114,6 +113,7 @@ function basket(quantityChoice) {
           && searchItem.id === productId
         ) {
           item = i
+          console.log(item);
         }
       };
       // ajout d'un nouvel article dans le panier si il n'y est pas
